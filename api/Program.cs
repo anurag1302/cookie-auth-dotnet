@@ -20,7 +20,7 @@ namespace api
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     options.Cookie.SameSite = SameSiteMode.Strict;
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                    options.LoginPath = "/api/login?ReturnUrl";
+                    options.LoginPath = "/api/login";
                     options.LogoutPath = "/api/logout";
                 });
 
