@@ -18,7 +18,7 @@ namespace api
                     options.Cookie.Name = "ApiAuthCookie";
                     options.Cookie.HttpOnly = true;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = SameSiteMode.Strict;
+                    options.Cookie.SameSite = SameSiteMode.None;
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                     options.LoginPath = "/api/login";
                     options.LogoutPath = "/api/logout";
@@ -30,6 +30,18 @@ namespace api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("DefaultCorsPolicy", policy =>
+                {
+                    policy
+                    .WithOrigins("http://localhost:5174")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -40,19 +52,19 @@ namespace api
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors("DefaultCorsPolicy");
             app.UseAuthorization();
-            //app.MapControllers();
+
             app.MapGet("/", (Func<string>)(() => "Hello World!"));
 
-            app.MapPost("/api/login", async (HttpContext context, string username, string password, string ReturnUrl) =>
+            app.MapPost("/api/login", async (HttpContext context, User user) =>
             {
                 // Replace this with your actual user validation logic
-                if (username == "test" && password == "password")
+                if (user.UserName == "test" && user.Password == "password")
                 {
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, username),
+                        new Claim(ClaimTypes.Name, user.UserName),
                     };
 
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
