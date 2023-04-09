@@ -55,7 +55,7 @@ namespace api
             app.UseCors("DefaultCorsPolicy");
             app.UseAuthorization();
 
-            app.MapGet("/", (Func<string>)(() => "Hello World!"));
+            app.MapGet("/", () => "Hello World!");
 
             app.MapPost("/api/login", async (HttpContext context, User user) =>
             {
@@ -85,7 +85,7 @@ namespace api
                 context.Response.StatusCode = StatusCodes.Status200OK;
             });
 
-            app.MapGet("/api/protected", () => "Protected data").RequireAuthorization();
+            app.MapGet("/api/protected", () => "Sensitive data").RequireAuthorization();
 
             app.Run();
         }
